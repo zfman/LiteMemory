@@ -31,6 +31,28 @@ LiteMemory是一个用于简化SharePreference的框架，主要用于简化对�
 
 ## 简单使用
 
+**引入依赖**[![](https://jitpack.io/v/zfman/LiteMemory.svg)](https://jitpack.io/#zfman/LiteMemory)
+
+**To get a Git project into your build:**
+
+**Step 1. Add the JitPack repository to your build file**
+
+Add it in your root build.gradle at the end of repositories:
+
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+
+**Step 2. Add the dependency**
+```
+	dependencies {
+	        implementation 'com.github.zfman:LiteMemory:1.0.0'
+	}
+```
+
 **初始化**
 
 - 你需要先执行LiteMemory的初始化操作，一般将该操作放在`Application`中
@@ -130,3 +152,7 @@ public class User {
 ```java
     boolean has=LiteMemory.get().exist(User.class);
 ```
+
+**混淆**
+
+本库没有混淆，但是内部采用fastjson进行序列化与反序列化，如果你的项目需要混淆的话请自行查阅资料添加
