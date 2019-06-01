@@ -1,37 +1,96 @@
 package com.zhuangfei.preference;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+
+import javax.microedition.khronos.egl.EGLDisplay;
 
 /**
  * Created by Liu ZhuangFei on 2019/6/1.
  */
 public class LiteMemory implements ILiteMemory {
 
-    Context context;
+    private static Context context;
+    private static LiteMemory instance;
+    private static SharedPreferences preferences;
+    private static SharedPreferences.Editor editor;
+    public static final String KEY_PREFERENCE = "litememory_preference";
 
-    private LiteMemory(){}
+    private LiteMemory() {
+        preferences = context.getSharedPreferences(KEY_PREFERENCE, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+    }
 
-    public static LiteMemory with(@NonNull Context context){
-        LiteMemory preference=new LiteMemory();
-        preference.context=context;
-        return preference;
+    private static void ensureInstance() {
+        if (context == null) {
+            throw new RuntimeException("LiteMemory:Context is null,you should call"
+                    + "`LiteMemory.initialize(context)` before."
+                    + "Or you can call `LiteMemory.initialize(context)` in application#onCreate");
+        }
+        if (instance == null) {
+            synchronized (LiteMemory.class) {
+                if (instance == null) {
+                    instance = new LiteMemory();
+                }
+            }
+        }
+
+    }
+
+    /**
+     * 初始化，必须在调用其他方法前调用初始化方法.
+     * 一般的，应该在Applicaion#onCreate中调用
+     *
+     * @param ctx
+     */
+    public static void initialize(@NonNull Context ctx) {
+        context = ctx;
     }
 
     @Override
-    public void save(Object object) {
-
+    public <T> void save(T object) {
+        ensureInstance();
+        String value = JSON.toJSONString(object);
+        editor.putString(getKey(object), value);
+        editor.commit();
     }
 
     @Override
-    public <T> void get(Class<T> clazz) {
-        String key=clazz.getPackage()+"."+clazz.getSimpleName();
-        Toast.makeText(context,key,Toast.LENGTH_SHORT).show();
+    public <T> T from(Class<T> clazz) {
+        ensureInstance();
+        String value = preferences.getString(getKey(clazz), null);
+        if (value == null) {
+            try {
+                T newInstance = clazz.newInstance();
+                return newInstance;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Toast.makeText(context, getKey(clazz), Toast.LENGTH_SHORT).show();
+        T t = JSON.parseObject(value, clazz);
+        return t;
     }
 
     @Override
-    public void delete() {
+    public <T> void delete(Class<T> clazz) {
+        ensureInstance();
+        editor.putString(getKey(clazz),null);
+        editor.commit();
+    }
 
+    private <T> String getKey(T obj) {
+        String key = obj.getClass().getName();
+        return key;
+    }
+
+    public static LiteMemory get(){
+        ensureInstance();
+        return instance;
     }
 }
