@@ -7,4 +7,5 @@ public interface ILiteMemory {
     <T> void save(T object);
     <T> T from(Class<T> clazz);
     <T> void delete(Class<T> clazz);
+    <T> boolean exist(Class<T> clazz);
 }

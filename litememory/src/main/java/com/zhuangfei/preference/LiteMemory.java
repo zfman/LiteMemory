@@ -2,13 +2,7 @@ package com.zhuangfei.preference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
-import android.widget.Toast;
-
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
-
-import javax.microedition.khronos.egl.EGLDisplay;
 
 /**
  * Created by Liu ZhuangFei on 2019/6/1.
@@ -47,7 +41,7 @@ public class LiteMemory implements ILiteMemory {
      *
      * @param ctx
      */
-    public static void initialize(@NonNull Context ctx) {
+    public static void initialize(Context ctx) {
         context = ctx;
     }
 
@@ -76,17 +70,22 @@ public class LiteMemory implements ILiteMemory {
     }
 
     @Override
-    public <T> void delete(Class<T> clazz) {
+    public <T> boolean exist(Class<T> clazz) {
         ensureInstance();
-        editor.putString(getKey(clazz),null);
-        editor.commit();
+        if(preferences.contains(getKey(clazz))){
+            return true;
+        }
+        return false;
     }
 
-//    public <T> void from(Class<T> clazz) {
-//        ensureInstance();
-//        editor.putString(getKey(clazz),null);
-//        editor.commit();
-//    }
+    @Override
+    public <T> void delete(Class<T> clazz) {
+        ensureInstance();
+        if(preferences.contains(getKey(clazz))){
+            editor.remove(getKey(clazz));
+            editor.commit();
+        }
+    }
 
     private <T> String getKey(Class<T> clazz) {
         String key = clazz.getClass().getName();

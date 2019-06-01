@@ -1,6 +1,5 @@
 package com.zhuangfei.preference_demo;
 
-import android.preference.Preference;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -15,10 +14,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         User user=new User();
-        user.setName("刘壮飞"+Math.random()*100);
+        user.setName("刘壮飞");
+        user.setAge(23);
         LiteMemory.get().save(user);
 
+        boolean has=LiteMemory.get().exist(User.class);
+
+        LiteMemory.get().delete(User.class);
+
         User newUser=LiteMemory.get().from(User.class);
-        Toast.makeText(this,"newUser:"+newUser.getName(),Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"newUser:"+has+";"+newUser.getName(),Toast.LENGTH_SHORT).show();
     }
 }
