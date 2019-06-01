@@ -19,6 +19,6 @@ public class MainActivity extends AppCompatActivity {
         LiteMemory.get().save(user);
 
         User newUser=LiteMemory.get().from(User.class);
-        Toast.makeText(this,newUser.getName(),Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"newUser:"+newUser.getName(),Toast.LENGTH_SHORT).show();
     }
 }

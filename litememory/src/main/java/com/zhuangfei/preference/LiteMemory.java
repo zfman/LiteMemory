@@ -39,7 +39,6 @@ public class LiteMemory implements ILiteMemory {
                 }
             }
         }
-
     }
 
     /**
@@ -56,7 +55,7 @@ public class LiteMemory implements ILiteMemory {
     public <T> void save(T object) {
         ensureInstance();
         String value = JSON.toJSONString(object);
-        editor.putString(getKey(object), value);
+        editor.putString(getKey(object.getClass()), value);
         editor.commit();
     }
 
@@ -72,7 +71,6 @@ public class LiteMemory implements ILiteMemory {
                 e.printStackTrace();
             }
         }
-        Toast.makeText(context, getKey(clazz), Toast.LENGTH_SHORT).show();
         T t = JSON.parseObject(value, clazz);
         return t;
     }
@@ -84,8 +82,14 @@ public class LiteMemory implements ILiteMemory {
         editor.commit();
     }
 
-    private <T> String getKey(T obj) {
-        String key = obj.getClass().getName();
+//    public <T> void from(Class<T> clazz) {
+//        ensureInstance();
+//        editor.putString(getKey(clazz),null);
+//        editor.commit();
+//    }
+
+    private <T> String getKey(Class<T> clazz) {
+        String key = clazz.getClass().getName();
         return key;
     }
 
